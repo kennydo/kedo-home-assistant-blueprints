@@ -1,0 +1,30 @@
+blueprint:
+  name: Turn off light at time
+  description: Turn off a light at a given time
+  domain: automation
+  input:
+    target_light:
+      name: Light
+      description: The light to turn off
+      selector:
+        entity:
+          domain: light
+    target_time:
+      name: Time
+      description: When to turn the light off
+      selector:
+        time:
+
+trigger:
+  platform: time
+  at: !input target_time
+
+condition:
+  condition: numeric_state
+  entity_id: !input target_light
+  value_template: '{% if state.state == "on" %}{{ state.attributes.brightness }}{% else %}0{% endif %}'
+  above: 1
+action:
+  data:
+    entity_id: !input target_light
+  service: light.turn_off

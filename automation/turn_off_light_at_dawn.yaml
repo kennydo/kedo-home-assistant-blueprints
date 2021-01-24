@@ -1,0 +1,27 @@
+blueprint:
+  name: Turn off light at dawn
+  description: Turn off a light at dawn
+  domain: automation
+  input:
+    target_light:
+      name: Light
+      description: The light to turn off
+      selector:
+        entity:
+          domain: light
+
+trigger:
+  platform: sun
+  event: sunrise
+  offset: -00:15:00
+    
+condition:
+  condition: numeric_state
+  entity_id: !input target_light
+  value_template: '{% if state.state == "on" %}{{ state.attributes.brightness }}{% else %}0{% endif %}'
+  above: 1
+
+action:
+  data:
+    entity_id: !input target_light
+  service: light.turn_off
